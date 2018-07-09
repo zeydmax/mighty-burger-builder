@@ -50,8 +50,8 @@
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
-    "start": "node scripts/start.js react-scripts start",
-    "build": "node scripts/build.js react-scripts build",
+    "start": "node scripts/start.js",
+    "build": "node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom"
   },
   "jest": {
