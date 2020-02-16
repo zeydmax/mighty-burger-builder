@@ -18,6 +18,14 @@ class ContactData extends Component {
           placeholder: 'Your name',
         },
         value: '',
+        validation: {
+          required: true,
+          minLength: 3,
+          maxLength: 8,
+        },
+        touched: false,
+        valid: false,
+        errorMessage: null,
       },
       email: {
         elementType: 'input',
@@ -25,7 +33,13 @@ class ContactData extends Component {
           type: 'email',
           placeholder: 'Your E-Mail',
         },
+        touched: false,
         value: '',
+        validation: {
+          required: true,
+        },
+        valid: false,
+        errorMessage: null,
       },
       country: {
         elementType: 'input',
@@ -33,7 +47,13 @@ class ContactData extends Component {
           type: 'text',
           placeholder: 'Country',
         },
+        touched: false,
         value: '',
+        validation: {
+          required: true,
+        },
+        valid: false,
+        errorMessage: null,
       },
       street: {
         elementType: 'input',
@@ -41,7 +61,13 @@ class ContactData extends Component {
           type: 'text',
           placeholder: 'Street',
         },
+        touched: false,
         value: '',
+        validation: {
+          required: true,
+        },
+        valid: false,
+        errorMessage: null,
       },
       postalCode: {
         elementType: 'input',
@@ -49,7 +75,13 @@ class ContactData extends Component {
           type: 'text',
           placeholder: 'ZIP Code',
         },
+        touched: false,
         value: '',
+        validation: {
+          required: true,
+        },
+        valid: false,
+        errorMessage: null,
       },
       deliveryMethod: {
         elementType: 'select',
@@ -62,23 +94,66 @@ class ContactData extends Component {
         value: 'fastest',
       },
     },
+    formIsValid: false,
     loading: false,
+  }
+  checkValidity(value, rules) {
+    let isValid = true
+    let message = null
+
+    if (rules.required) {
+      isValid = value.trim() !== '' && isValid
+      if (value.trim() === '') {
+        message = 'This value is required.'
+      }
+    }
+
+    if (rules.minLength) {
+      isValid = value.length >= rules.minLength && isValid
+      if (!value.length < rules.minLength && !message) {
+        message = 'Entered value is too short.'
+      }
+    }
+
+    if (rules.maxLength) {
+      isValid = value.length <= rules.maxLength && isValid
+      if (value.length > rules.maxLength) {
+        message = 'Entered value is too long.'
+      }
+    }
+
+    return {isValid, message}
   }
   inputChangeHandler = event => {
     let value = event.target.value
     let name = event.target.name
-    this.setState({
-      orderForm: {
-        ...this.state.orderForm,
-        [name]: {
-          ...this.state.orderForm[name],
-          value,
-        },
-      },
-    })
+
+    const updatedForm = {...this.state.orderForm}
+    const updatedField = updatedForm[name]
+
+    updatedField.value = value
+    if (updatedField.validation) {
+      updatedField.valid = this.checkValidity(value, this.state.orderForm[name].validation).isValid
+      updatedField.touched = true
+      updatedField.errorMessage = this.checkValidity(value, this.state.orderForm[name].validation).message
+    }
+
+    updatedForm[name] = updatedField
+
+    let formIsValid = true
+    for (let fieldName in updatedForm) {
+      if (updatedForm[fieldName].validation) {
+        formIsValid = updatedForm[fieldName].valid && formIsValid
+      }
+    }
+
+    this.setState({orderForm: updatedForm, formIsValid: formIsValid})
   }
   orderHandler = event => {
     event.preventDefault()
+    if (!this.state.formIsValid) {
+      return
+    }
     this.setState({loading: true})
     const fieldData = {}
     for (let fieldId in this.state.orderForm) {
@@ -114,6 +189,10 @@ class ContactData extends Component {
           name={input.id}
           onChange={this.inputChangeHandler}
           value={input.config.value}
+          invalid={!input.config.valid}
+          shouldValidate={input.config.validation}
+          touched={input.config.touched}
+          errorMessage={input.config.errorMessage}
         />
       )
     })
@@ -124,7 +203,7 @@ class ContactData extends Component {
         <Input autoComplete="off" type="text" name="street" placeholder="Your street" />
         <Input autoComplete="off" type="text" name="postalCode" placeholder="Your Postal Code" /> */}
         {mappedInputs}
-        <Button btnType="Success" clicked={this.orderHandler}>
+        <Button disabled={!this.state.formIsValid} btnType="Success" clicked={this.orderHandler}>
           ORDER
         </Button>
       </form>
