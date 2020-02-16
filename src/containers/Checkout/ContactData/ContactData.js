@@ -59,7 +59,7 @@ class ContactData extends Component {
             {value: 'cheapest', displayValue: 'Cheapest'},
           ],
         },
-        value: '',
+        value: 'fastest',
       },
     },
     loading: false,
@@ -82,21 +82,12 @@ class ContactData extends Component {
     this.setState({loading: true})
     const fieldData = {}
     for (let fieldId in this.state.orderForm) {
-      fieldData[fieldId] = this.state.orderForm[fieldId]
+      fieldData[fieldId] = this.state.orderForm[fieldId].value
     }
     const data = {
       ingredients: this.props.ingredients,
       price: this.props.price,
-      customer: {
-        name: fieldData.name.value,
-        address: {
-          street: fieldData.street.value,
-          zipCode: fieldData.zipCode.value,
-          country: fieldData.country.value,
-        },
-        email: fieldData.email.value,
-      },
-      deliveryMethod: fieldData.deliveryMethod.value,
+      orderData: fieldData,
     }
     axios
       .post('/orders.json', data)
