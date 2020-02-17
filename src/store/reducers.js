@@ -1,10 +1,7 @@
-import ingredients from './ingredients/reducer'
-import {createStore, combineReducers} from 'redux'
+import builder from './builder/reducer'
+import order from './order/reducer'
+import {combineReducers} from 'redux'
 
-const mainReducer = combineReducers({
-  ingredients,
+export const mainReducer = combineReducers({
+  builder,
 })
-
-const store = createStore(mainReducer)
-
-export default store
