@@ -8,6 +8,7 @@ import Spinner from '../../../components/UI/Spinner/Spinner'
 import Input from '../../../components/UI/Input/Input'
 
 import classes from './ContactData.css'
+import {postOrderStart} from '../../../store/order/actions'
 
 class ContactData extends Component {
   state = {
@@ -155,7 +156,6 @@ class ContactData extends Component {
     if (!this.state.formIsValid) {
       return
     }
-    this.setState({loading: true})
     const fieldData = {}
     for (let fieldId in this.state.orderForm) {
       fieldData[fieldId] = this.state.orderForm[fieldId].value
@@ -165,15 +165,16 @@ class ContactData extends Component {
       price: this.props.price,
       orderData: fieldData,
     }
-    axios
-      .post('/orders.json', data)
-      .then(response => {
-        this.setState({loading: false})
-        this.props.history.push('/')
-      })
-      .catch(error => {
-        this.setState({loading: false})
-      })
+    // axios
+    //   .post('/orders.json', data)
+    //   .then(response => {
+    //     this.setState({loading: false})
+    //     this.props.history.push('/')
+    //   })
+    //   .catch(error => {
+    //     this.setState({loading: false})
+    //   })
+    this.props.onOrderPost(data)
   }
   render() {
     let inputs = []
@@ -199,17 +200,13 @@ class ContactData extends Component {
     })
     let form = (
       <form onSubmit={this.orderHandler}>
-        {/* <Input autoComplete="off" type="text" name="name" placeholder="Your name" />
-        <Input autoComplete="off" type="email" name="email" placeholder="Your email" />
-        <Input autoComplete="off" type="text" name="street" placeholder="Your street" />
-        <Input autoComplete="off" type="text" name="postalCode" placeholder="Your Postal Code" /> */}
         {mappedInputs}
         <Button disabled={!this.state.formIsValid} btnType="Success" clicked={this.orderHandler}>
           ORDER
         </Button>
       </form>
     )
-    if (this.state.loading) {
+    if (this.props.loading) {
       form = <Spinner />
     }
     return (
@@ -225,7 +222,14 @@ const mapStateToProps = state => {
   return {
     ingredients: state.builder.ingredients,
     price: state.builder.totalPrice,
+    loading: state.order.loading,
   }
 }
 
-export default connect(mapStateToProps)(withRouter(ContactData))
+const mapDispatchToProps = dispatch => {
+  return {
+    onOrderPost: data => dispatch(postOrderStart(data)),
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(ContactData))

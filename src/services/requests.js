@@ -13,7 +13,7 @@ export const fetchIngredients = () => {
 
 export const postOrder = data => {
   return axios
-    .post('/orders.js', data)
+    .post('/orders.json', data)
     .then(response => {
       return response.data
     })

@@ -1,42 +1,23 @@
 import * as types from './actionTypes'
+import {updateObject} from '../../utilities'
 
 const initialState = {
-  ingredients: {
-    salad: 0,
-    bacon: 0,
-    cheese: 0,
-    meat: 0,
-  },
-  totalPrice: 4,
-}
-
-const INGREDIENT_PRICES = {
-  salad: 0.5,
-  cheese: 0.4,
-  meat: 1.3,
-  bacon: 0.7,
+  orders: [],
+  loading: false,
+  error: null,
+  purchased: false,
 }
 
 const order = (state = initialState, action) => {
   switch (action.type) {
-    case types.ADD_INGREDIENT:
-      return {
-        ...state,
-        ingredients: {
-          ...state.ingredients,
-          [action.ingredientType]: state.ingredients[action.ingredientType] + 1,
-        },
-        totalPrice: state.totalPrice + INGREDIENT_PRICES[action.ingredientType],
-      }
-    case types.REMOVE_INGREDIENT:
-      return {
-        ...state,
-        ingredients: {
-          ...state.ingredients,
-          [action.ingredientType]: state.ingredients[action.ingredientType] - 1,
-        },
-        totalPrice: state.totalPrice - INGREDIENT_PRICES[action.ingredientType],
-      }
+    case types.POST_ORDER_INIT:
+      return updateObject(state, {purchased: false})
+    case types.POST_ORDER:
+      return updateObject(state, {loading: true})
+    case types.POST_ORDER_SUCCESS:
+      return updateObject(state, {loading: false, orders: [...state.orders, action.orderData], purchased: true})
+    case types.POST_ORDER_FAILED:
+      return updateObject(state, {loading: false, error: action.error})
     default:
       return state
   }
