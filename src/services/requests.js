@@ -7,6 +7,17 @@ export const fetchIngredients = () => {
       return response.data
     })
     .catch(error => {
-      return error.data
+      throw error
+    })
+}
+
+export const postOrder = data => {
+  return axios
+    .post('/orders.js', data)
+    .then(response => {
+      return response.data
+    })
+    .catch(error => {
+      throw error
     })
 }

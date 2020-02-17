@@ -2,14 +2,10 @@ import * as types from './actionTypes'
 import {updateObject} from '../../utilities'
 
 const initialState = {
-  ingredients: {
-    salad: 0,
-    bacon: 0,
-    cheese: 0,
-    meat: 0,
-  },
+  ingredients: null,
   totalPrice: 4,
   loading: false,
+  error: false,
 }
 
 const INGREDIENT_PRICES = {
@@ -22,7 +18,13 @@ const INGREDIENT_PRICES = {
 const builder = (state = initialState, action) => {
   switch (action.type) {
     case types.GET_INGREDIENTS: {
-      return updateObject(state, {ingredients: action.data})
+      return updateObject(state, {loading: true})
+    }
+    case types.GET_INGREDIENTS_SUCCESS: {
+      return updateObject(state, {ingredients: action.data, loading: false})
+    }
+    case types.GET_INGREDIENTS_FAILED: {
+      return updateObject(state, {loading: false, error: true})
     }
     case types.ADD_INGREDIENT:
       return updateObject(state, {
@@ -40,8 +42,6 @@ const builder = (state = initialState, action) => {
         },
         totalPrice: state.totalPrice - INGREDIENT_PRICES[action.ingredientType],
       })
-    case types.TOGGLE_LOADER:
-      return updateObject(state, {loading: !state.loading})
     default:
       return state
   }

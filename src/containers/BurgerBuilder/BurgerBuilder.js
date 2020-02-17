@@ -75,7 +75,7 @@ class BurgerBuilder extends Component {
     }
     let orderSummary = null
 
-    let burger = this.state.error ? <p>Ingredients can't be loaded</p> : <Spinner />
+    let burger = this.props.error ? <p>Ingredients can't be loaded</p> : <Spinner />
     if (this.props.ingredients) {
       burger = (
         <React.Fragment>
@@ -119,6 +119,7 @@ const mapStateToProps = state => {
     ingredients: state.builder.ingredients,
     totalPrice: state.builder.totalPrice,
     loading: state.builder.loading,
+    error: state.builder.error,
   }
 }
 
