@@ -21,7 +21,7 @@ const builder = (state = initialState, action) => {
       return updateObject(state, {loading: true})
     }
     case types.GET_INGREDIENTS_SUCCESS: {
-      return updateObject(state, {ingredients: action.data, loading: false})
+      return updateObject(state, {ingredients: action.data, loading: false, totalPrice: 4})
     }
     case types.GET_INGREDIENTS_FAILED: {
       return updateObject(state, {loading: false, error: true})

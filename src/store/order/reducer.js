@@ -18,6 +18,12 @@ const order = (state = initialState, action) => {
       return updateObject(state, {loading: false, orders: [...state.orders, action.orderData], purchased: true})
     case types.POST_ORDER_FAILED:
       return updateObject(state, {loading: false, error: action.error})
+    case types.GET_ORDERS:
+      return updateObject(state, {loading: true})
+    case types.GET_ORDERS_SUCCESS:
+      return updateObject(state, {loading: false, orders: action.orders})
+    case types.GET_ORDERS_FAILED:
+      return updateObject(state, {loading: false, error: action.error})
     default:
       return state
   }

@@ -21,3 +21,14 @@ export const postOrder = data => {
       throw error
     })
 }
+
+export const getOrders = () => {
+  return axios
+    .get('/orders.json')
+    .then(response => {
+      return response.data
+    })
+    .catch(error => {
+      throw error
+    })
+}
