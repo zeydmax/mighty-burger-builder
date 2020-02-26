@@ -5,9 +5,10 @@ export const postOrderSuccess = (id, data) => dispatch =>
   dispatch({type: types.POST_ORDER_SUCCESS, orderData: {...data, id: id.name}})
 export const postOrderFail = error => dispatch => dispatch({type: types.POST_ORDER_FAILED, error})
 
-export const postOrderStart = orderData => dispatch => {
+export const postOrderStart = orderData => (dispatch, getState) => {
   dispatch({type: types.POST_ORDER})
-  postOrder(orderData)
+  const token = getState().auth.token
+  postOrder(orderData, token)
     .then(response => {
       dispatch(postOrderSuccess(response, orderData))
     })
@@ -20,9 +21,11 @@ export const getOrdersSuccess = data => dispatch => dispatch({type: types.GET_OR
 
 export const getOrdersFailed = errors => dispatch => dispatch({type: types.GET_ORDERS_FAILED, errors})
 
-export const getOrdersStart = () => dispatch => {
+export const getOrdersStart = () => (dispatch, getState) => {
   dispatch({type: types.GET_ORDERS})
-  getOrders()
+  const token = getState().auth.token
+  const userId = getState().auth.userId
+  getOrders(token, userId)
     .then(response => {
       const fetchedOrders = []
       for (let key in response) {

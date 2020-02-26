@@ -6,6 +6,7 @@ const initialState = {
   totalPrice: 4,
   loading: false,
   error: false,
+  building: false,
 }
 
 const INGREDIENT_PRICES = {
@@ -22,6 +23,7 @@ const addIngredient = (state, action) => {
       [action.ingredientType]: state.ingredients[action.ingredientType] + 1,
     },
     totalPrice: state.totalPrice + INGREDIENT_PRICES[action.ingredientType],
+    building: true,
   })
 }
 const removeIngredient = (state, action) => {
@@ -31,11 +33,12 @@ const removeIngredient = (state, action) => {
       [action.ingredientType]: state.ingredients[action.ingredientType] - 1,
     },
     totalPrice: state.totalPrice - INGREDIENT_PRICES[action.ingredientType],
+    building: true,
   })
 }
 const getIngredients = state => updateObject(state, {loading: true})
 const getIngredientsSuccess = (state, action) =>
-  updateObject(state, {ingredients: action.data, loading: false, totalPrice: 4})
+  updateObject(state, {ingredients: action.data, loading: false, totalPrice: 4, building: false})
 const getIngredientsFailed = state => updateObject(state, {loading: false, error: true})
 
 const builder = (state = initialState, action) => {

@@ -1,7 +1,10 @@
-import axios from '../axios-orders'
+import api from '../axios-orders'
+import axios from 'axios'
+
+const API_KEY = 'AIzaSyBXvKdgVio0epZPlCutZIS7CUaHIsAWwcs'
 
 export const fetchIngredients = () => {
-  return axios
+  return api
     .get('/ingredients.json')
     .then(response => {
       return response.data
@@ -11,9 +14,9 @@ export const fetchIngredients = () => {
     })
 }
 
-export const postOrder = data => {
-  return axios
-    .post('/orders.json', data)
+export const postOrder = (data, token = null) => {
+  return api
+    .post(`/orders.json${token ? '?auth=' + token : ''}`, data)
     .then(response => {
       return response.data
     })
@@ -22,13 +25,28 @@ export const postOrder = data => {
     })
 }
 
-export const getOrders = () => {
-  return axios
-    .get('/orders.json')
+export const getOrders = (token = null, userId = null) => {
+  return api
+    .get(`/orders.json?${token ? 'auth=' + token : ''}${userId ? '&orderBy="userId"&equalTo="' + userId + '"' : ''}`)
     .then(response => {
       return response.data
     })
     .catch(error => {
       throw error
+    })
+}
+
+export const authorize = (data, method) => {
+  let url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${API_KEY}`
+  if (method === 'signin') {
+    url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`
+  }
+  return axios
+    .post(url, data)
+    .then(response => {
+      return response.data
+    })
+    .catch(error => {
+      throw error.response.data
     })
 }
