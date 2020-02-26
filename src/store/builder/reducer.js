@@ -15,33 +15,41 @@ const INGREDIENT_PRICES = {
   bacon: 0.7,
 }
 
+const addIngredient = (state, action) => {
+  return updateObject(state, {
+    ingredients: {
+      ...state.ingredients,
+      [action.ingredientType]: state.ingredients[action.ingredientType] + 1,
+    },
+    totalPrice: state.totalPrice + INGREDIENT_PRICES[action.ingredientType],
+  })
+}
+const removeIngredient = (state, action) => {
+  return updateObject(state, {
+    ingredients: {
+      ...state.ingredients,
+      [action.ingredientType]: state.ingredients[action.ingredientType] - 1,
+    },
+    totalPrice: state.totalPrice - INGREDIENT_PRICES[action.ingredientType],
+  })
+}
+const getIngredients = state => updateObject(state, {loading: true})
+const getIngredientsSuccess = (state, action) =>
+  updateObject(state, {ingredients: action.data, loading: false, totalPrice: 4})
+const getIngredientsFailed = state => updateObject(state, {loading: false, error: true})
+
 const builder = (state = initialState, action) => {
   switch (action.type) {
-    case types.GET_INGREDIENTS: {
-      return updateObject(state, {loading: true})
-    }
-    case types.GET_INGREDIENTS_SUCCESS: {
-      return updateObject(state, {ingredients: action.data, loading: false, totalPrice: 4})
-    }
-    case types.GET_INGREDIENTS_FAILED: {
-      return updateObject(state, {loading: false, error: true})
-    }
+    case types.GET_INGREDIENTS:
+      return getIngredients(state)
+    case types.GET_INGREDIENTS_SUCCESS:
+      return getIngredientsSuccess(state, action)
+    case types.GET_INGREDIENTS_FAILED:
+      return getIngredientsFailed(state)
     case types.ADD_INGREDIENT:
-      return updateObject(state, {
-        ingredients: {
-          ...state.ingredients,
-          [action.ingredientType]: state.ingredients[action.ingredientType] + 1,
-        },
-        totalPrice: state.totalPrice + INGREDIENT_PRICES[action.ingredientType],
-      })
+      return addIngredient(state, action)
     case types.REMOVE_INGREDIENT:
-      return updateObject(state, {
-        ingredients: {
-          ...state.ingredients,
-          [action.ingredientType]: state.ingredients[action.ingredientType] - 1,
-        },
-        totalPrice: state.totalPrice - INGREDIENT_PRICES[action.ingredientType],
-      })
+      return removeIngredient(state, action)
     default:
       return state
   }
