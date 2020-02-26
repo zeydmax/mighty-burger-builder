@@ -16,3 +16,5 @@ export const getIngredients = () => dispatch => {
       dispatch({type: types.GET_INGREDIENTS_FAILED})
     })
 }
+
+export const setBuilding = () => ({type: types.SET_BUILDING})

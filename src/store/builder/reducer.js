@@ -40,6 +40,7 @@ const getIngredients = state => updateObject(state, {loading: true})
 const getIngredientsSuccess = (state, action) =>
   updateObject(state, {ingredients: action.data, loading: false, totalPrice: 4, building: false})
 const getIngredientsFailed = state => updateObject(state, {loading: false, error: true})
+const setBuilding = state => updateObject(state, {building: !state.building})
 
 const builder = (state = initialState, action) => {
   switch (action.type) {
@@ -53,6 +54,8 @@ const builder = (state = initialState, action) => {
       return addIngredient(state, action)
     case types.REMOVE_INGREDIENT:
       return removeIngredient(state, action)
+    case types.SET_BUILDING:
+      return setBuilding(state)
     default:
       return state
   }

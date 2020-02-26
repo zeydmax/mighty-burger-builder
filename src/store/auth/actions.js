@@ -24,7 +24,6 @@ export const auth = (email, password, method) => dispatch => {
   }
   authorize(data, method)
     .then(response => {
-      console.log(response)
       localStorage.setItem('token', response.idToken)
       localStorage.setItem('userId', response.localId)
       localStorage.setItem('expirationDate', new Date(new Date().getTime() + response.expiresIn * 1000))
@@ -32,7 +31,6 @@ export const auth = (email, password, method) => dispatch => {
       dispatch(authSuccess(response))
     })
     .catch(error => {
-      console.log('error', error.error)
       dispatch(authFailed(error.error))
     })
 }

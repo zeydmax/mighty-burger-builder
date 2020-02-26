@@ -1,14 +1,14 @@
 import React, {Component} from 'react'
-import axios from '../../../axios-orders'
 import {withRouter} from 'react-router-dom'
 import {connect} from 'react-redux'
+import {postOrderStart} from '../../../store/order/actions'
+import {updateObject, checkValidity} from '../../../utilities'
 
 import Button from '../../../components/UI/Button/Button'
 import Spinner from '../../../components/UI/Spinner/Spinner'
 import Input from '../../../components/UI/Input/Input'
 
 import classes from './ContactData.css'
-import {postOrderStart} from '../../../store/order/actions'
 
 class ContactData extends Component {
   state = {
@@ -94,53 +94,25 @@ class ContactData extends Component {
           ],
         },
         value: 'fastest',
+        validation: {},
+        valid: true,
+        errorMessage: null,
       },
     },
     formIsValid: false,
     loading: false,
   }
-  checkValidity(value, rules) {
-    let isValid = true
-    let message = null
-
-    if (rules.required) {
-      isValid = value.trim() !== '' && isValid
-      if (value.trim() === '') {
-        message = 'This value is required.'
-      }
-    }
-
-    if (rules.minLength) {
-      isValid = value.length >= rules.minLength && isValid
-      if (!value.length < rules.minLength && !message) {
-        message = 'Entered value is too short.'
-      }
-    }
-
-    if (rules.maxLength) {
-      isValid = value.length <= rules.maxLength && isValid
-      if (value.length > rules.maxLength) {
-        message = 'Entered value is too long.'
-      }
-    }
-
-    return {isValid, message}
-  }
   inputChangeHandler = event => {
     let value = event.target.value
     let name = event.target.name
+    const updatedField = updateObject(this.state.orderForm[name], {
+      value,
+      valid: checkValidity(value, this.state.orderForm[name].validation).isValid,
+      touched: true,
+      errorMessage: checkValidity(value, this.state.orderForm[name].validation).message,
+    })
 
-    const updatedForm = {...this.state.orderForm}
-    const updatedField = updatedForm[name]
-
-    updatedField.value = value
-    if (updatedField.validation) {
-      updatedField.valid = this.checkValidity(value, this.state.orderForm[name].validation).isValid
-      updatedField.touched = true
-      updatedField.errorMessage = this.checkValidity(value, this.state.orderForm[name].validation).message
-    }
-
-    updatedForm[name] = updatedField
+    const updatedForm = updateObject(this.state.orderForm, {[name]: updatedField})
 
     let formIsValid = true
     for (let fieldName in updatedForm) {
@@ -166,15 +138,6 @@ class ContactData extends Component {
       orderData: fieldData,
       userId: this.props.userId,
     }
-    // axios
-    //   .post('/orders.json', data)
-    //   .then(response => {
-    //     this.setState({loading: false})
-    //     this.props.history.push('/')
-    //   })
-    //   .catch(error => {
-    //     this.setState({loading: false})
-    //   })
     this.props.onOrderPost(data)
   }
   render() {

@@ -8,6 +8,7 @@ import Spinner from '../../components/UI/Spinner/Spinner'
 
 import classes from './Auth.css'
 import {Redirect} from 'react-router-dom'
+import {updateObject, checkValidity} from '../../utilities'
 
 class Auth extends Component {
   state = {
@@ -53,55 +54,19 @@ class Auth extends Component {
       this.props.onSetRedirectPath('/')
     }
   }
-  checkValidity(value, rules) {
-    let isValid = true
-    let message = null
 
-    if (rules.required) {
-      isValid = value.trim() !== '' && isValid
-      if (value.trim() === '') {
-        message = 'This value is required.'
-      }
-    }
-    if (rules.isEmail) {
-      const regex = /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/g
-      isValid = regex.test(value) && isValid
-      if (regex.test(value) === false) {
-        message = 'Enter correct e-mail adress.'
-      }
-    }
-
-    if (rules.minLength) {
-      isValid = value.length >= rules.minLength && isValid
-      if (!value.length < rules.minLength && !message) {
-        message = 'Entered value is too short.'
-      }
-    }
-
-    if (rules.maxLength) {
-      isValid = value.length <= rules.maxLength && isValid
-      if (value.length > rules.maxLength) {
-        message = 'Entered value is too long.'
-      }
-    }
-
-    return {isValid, message}
-  }
   inputChangeHandler = event => {
     let value = event.target.value
     let name = event.target.name
 
-    const updatedForm = {...this.state.controls}
-    const updatedField = updatedForm[name]
+    const updatedField = updateObject(this.state.controls[name], {
+      value,
+      valid: checkValidity(value, this.state.controls[name].validation).isValid,
+      touched: true,
+      errorMessage: checkValidity(value, this.state.controls[name].validation).message,
+    })
 
-    updatedField.value = value
-    if (updatedField.validation) {
-      updatedField.valid = this.checkValidity(value, this.state.controls[name].validation).isValid
-      updatedField.touched = true
-      updatedField.errorMessage = this.checkValidity(value, this.state.controls[name].validation).message
-    }
-
-    updatedForm[name] = updatedField
+    const updatedForm = updateObject(this.state.controls, {[name]: updatedField})
 
     let formIsValid = true
     for (let fieldName in updatedForm) {

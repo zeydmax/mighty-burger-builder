@@ -38,7 +38,11 @@ class BurgerBuilder extends Component {
   }
 
   componentDidMount() {
-    this.props.getIngredients()
+    if (!this.props.isBuilding) {
+      this.props.getIngredients()
+    } else {
+      this.updatePurchaseState(this.props.ingredients)
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -61,12 +65,6 @@ class BurgerBuilder extends Component {
   }
 
   purchaseContinueHandler = () => {
-    // const query = []
-    // for (let i in this.props.ingredients) {
-    //   query.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.props.ingredients[i]))
-    // }
-    // query.push('price=' + this.state.totalPrice)
-    // const queryString = query.join('&')
     this.props.history.push({
       pathname: '/checkout',
     })
@@ -127,6 +125,7 @@ const mapStateToProps = state => {
     loading: state.builder.loading,
     error: state.builder.error,
     isLoggedIn: state.auth.token !== null,
+    isBuilding: state.builder.building,
   }
 }
 

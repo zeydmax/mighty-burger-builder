@@ -1,5 +1,6 @@
 import * as types from './actionTypes'
 import {postOrder, getOrders} from '../../services/requests'
+import {setBuilding} from '../builder/actions'
 
 export const postOrderSuccess = (id, data) => dispatch =>
   dispatch({type: types.POST_ORDER_SUCCESS, orderData: {...data, id: id.name}})
@@ -10,6 +11,7 @@ export const postOrderStart = orderData => (dispatch, getState) => {
   const token = getState().auth.token
   postOrder(orderData, token)
     .then(response => {
+      dispatch(setBuilding())
       dispatch(postOrderSuccess(response, orderData))
     })
     .catch(error => dispatch(postOrderFail(error)))
