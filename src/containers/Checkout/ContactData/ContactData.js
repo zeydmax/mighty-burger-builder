@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {withRouter} from 'react-router-dom'
 import {connect} from 'react-redux'
-import {postOrderStart} from '../../../store/order/actions'
+import {postOrderAction} from '../../../store/order/actions'
 import {updateObject, checkValidity} from '../../../utilities'
 
 import Button from '../../../components/UI/Button/Button'
@@ -193,7 +193,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onOrderPost: data => dispatch(postOrderStart(data)),
+    onOrderPost: data => dispatch(postOrderAction(data)),
   }
 }
 
