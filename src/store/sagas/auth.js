@@ -32,7 +32,7 @@ export function* authUserSaga(action) {
     localStorage.setItem('userId', userId)
     
     yield put(actions.authSuccess(response))
-    yield put(actions.checkTokenTimeout(expirationDate))
+    yield put(actions.checkTokenTimeout(response.expiresIn))
   }
   catch(error) {
     yield put(actions.authFailed(error.error))
