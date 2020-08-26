@@ -23,7 +23,7 @@ export function* authUserSaga(action) {
   }
   try {
     const response = yield authorize(data, action.method)
-    const expirationDate = new Date(new Date().getTime() + response.expiresIn * 1000)
+    const expirationDate = yield new Date(new Date().getTime() + response.expiresIn * 1000)
     const token = response.idToken
     const userId = response.localId
   
