@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, {useEffect} from 'react'
 import {Route, Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
 
@@ -6,31 +6,30 @@ import ContactData from './ContactData/ContactData'
 import CheckoutSummary from '../../components/Order/CheckoutSummary/CheckoutSummary'
 import {postOrderInit} from '../../store/order/actions'
 
-class Checkout extends Component {
-  componentDidMount() {
-    this.props.onOrderInit()
-  }
-  checkoutCancelHandler = () => this.props.history.goBack()
-  checkoutContinueHandler = () => this.props.history.replace('/checkout/contact-data')
+const checkout = props => {
+  useEffect(() => {
+    props.onOrderInit()
+  },[])
 
-  render() {
-    let summary = <Redirect to="/" />
-    if (this.props.ingredients) {
-      const purchasedRedirect = this.props.purchased ? <Redirect to="/" /> : null
-      summary = (
-        <div>
-          {purchasedRedirect}
-          <CheckoutSummary
-            onCheckoutCancel={this.checkoutCancelHandler}
-            onCheckoutContinue={this.checkoutContinueHandler}
-            ingredients={this.props.ingredients}
-          />
-          <Route path={this.props.match.path + '/contact-data'} component={ContactData} />
-        </div>
-      )
-    }
-    return summary
+  const checkoutCancelHandler = () => props.history.goBack()
+  const checkoutContinueHandler = () => props.history.replace('/checkout/contact-data')
+
+  let summary = <Redirect to="/" />
+  if (props.ingredients) {
+    const purchasedRedirect = props.purchased ? <Redirect to="/" /> : null
+    summary = (
+      <div>
+        {purchasedRedirect}
+        <CheckoutSummary
+          onCheckoutCancel={checkoutCancelHandler}
+          onCheckoutContinue={checkoutContinueHandler}
+          ingredients={props.ingredients}
+        />
+        <Route path={props.match.path + '/contact-data'} component={ContactData} />
+      </div>
+    )
   }
+  return summary
 }
 
 const mapStateToProps = state => {
@@ -46,4 +45,4 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Checkout)
+export default connect(mapStateToProps, mapDispatchToProps)(checkout)

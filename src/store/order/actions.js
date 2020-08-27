@@ -1,5 +1,4 @@
 import * as types from './actionTypes'
-import {getOrders} from '../../services/requests'
 
 export const postOrderSuccess = (id, data) => dispatch =>
   dispatch({type: types.POST_ORDER_SUCCESS, orderData: {...data, id: id.name}})
