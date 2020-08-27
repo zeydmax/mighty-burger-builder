@@ -1,7 +1,7 @@
-import React, {useState, useEffect} from 'react'
-import {connect} from 'react-redux'
-import {addIngredient, removeIngredient, getIngredients} from '../../store/builder/actions'
-import {setRedirectPath} from '../../store/auth/actions'
+import React, {useState, useEffect, useCallback} from 'react'
+import {useDispatch, useSelector} from 'react-redux'
+import * as builderActions from '../../store/builder/actions'
+import * as authActions from '../../store/auth/actions'
 import Burger from '../../components/Burger/Burger'
 import BuildControls from '../../components/Burger/BuildControls/BuildControls'
 import Modal from '../../components/UI/Modal/Modal'
@@ -14,7 +14,15 @@ export const burgerBuilder = props => {
   const [purchasable, setPurchasable] = useState(false)
   const [purchasing, setPurchasing] = useState(false)
 
-  const {isBuilding, ingredients, getIngredients} = props
+  const {ingredients, error, loading, totalPrice, isBuilding} = useSelector(state => state.builder)
+  const isLoggedIn = useSelector(state => state.auth.token !== null)
+
+  const dispatch = useDispatch()
+
+  const addIngredient = type => dispatch(builderActions.addIngredient(type))
+  const removeIngredient = type => dispatch(builderActions.removeIngredient(type))
+  const getIngredients = useCallback(() => dispatch(builderActions.getIngredients()), [dispatch])
+  const setRedirectPath = path => dispatch(authActions.setRedirectPath(path))
 
   const updatePurchaseState = (ingredients) => {
     const sum = Object.keys(ingredients)
@@ -28,11 +36,11 @@ export const burgerBuilder = props => {
   }
 
   const addIngredientHandler = type => {
-    props.addIngredient(type)
+    addIngredient(type)
   }
 
   const removeIngredientHandler = type => {
-    props.removeIngredient(type)
+    removeIngredient(type)
   }
 
   useEffect(() => {
@@ -41,17 +49,17 @@ export const burgerBuilder = props => {
     } else {
       updatePurchaseState(ingredients)
     }
-  },[isBuilding, getIngredients])
+  },[getIngredients])
 
   useEffect(() => {
     if (ingredients) return updatePurchaseState(ingredients)
   },[ingredients])
 
   const purchaseHandler = () => {
-    if (props.isLoggedIn) {
+    if (isLoggedIn) {
       setPurchasing(true)
     } else {
-      props.setRedirectPath('/checkout')
+      setRedirectPath('/checkout')
       props.history.push('/auth')
     }
   }
@@ -74,32 +82,32 @@ export const burgerBuilder = props => {
     }
     let orderSummary = null
 
-    let burger = props.error ? <p>Ingredients can't be loaded</p> : <Spinner />
+    let burger = error ? <p>Ingredients can't be loaded</p> : <Spinner />
     if (ingredients) {
       burger = (
         <React.Fragment>
-          <Burger ingredients={props.ingredients} />
+          <Burger ingredients={ingredients} />
           <BuildControls
             ingredientAdded={addIngredientHandler}
             ingredientRemoved={removeIngredientHandler}
             disabled={disabledInfo}
             purchasable={purchasable}
             ordered={purchaseHandler}
-            price={props.totalPrice}
-            isLoggedIn={props.isLoggedIn}
+            price={totalPrice}
+            isLoggedIn={isLoggedIn}
           />
         </React.Fragment>
       )
       orderSummary = (
         <OrderSummary
           ingredients={ingredients}
-          price={props.totalPrice}
+          price={totalPrice}
           purchaseCancelled={purchaseCancelHandler}
           purchaseContinued={purchaseContinueHandler}
         />
       )
     }
-    if (props.loading) {
+    if (loading) {
       orderSummary = <Spinner />
     }
     return (
@@ -112,24 +120,4 @@ export const burgerBuilder = props => {
     )
 }
 
-const mapStateToProps = state => {
-  return {
-    ingredients: state.builder.ingredients,
-    totalPrice: state.builder.totalPrice,
-    loading: state.builder.loading,
-    error: state.builder.error,
-    isLoggedIn: state.auth.token !== null,
-    isBuilding: state.builder.building,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    addIngredient: type => dispatch(addIngredient(type)),
-    removeIngredient: type => dispatch(removeIngredient(type)),
-    getIngredients: () => dispatch(getIngredients()),
-    setRedirectPath: path => dispatch(setRedirectPath(path)),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(burgerBuilder, axios))
+export default withErrorHandler(burgerBuilder, axios)
