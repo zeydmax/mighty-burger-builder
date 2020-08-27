@@ -51,11 +51,13 @@ const auth = props => {
   const [isSignUp, setIsSignUp] = useState(false)
   const [formIsValid, setFormIsValid] = useState(false)
 
+  const {isBuilding, redirectPath, onSetRedirectPath} = props
+
   useEffect(() => {
-    if (!props.isBuilding && props.redirectPath !== '/') {
-      props.onSetRedirectPath('/')
+    if (!isBuilding && redirectPath !== '/') {
+      onSetRedirectPath('/')
     }
-  }, [])
+  }, [isBuilding, redirectPath, onSetRedirectPath])
 
   const inputChangeHandler = event => {
     let value = event.target.value
@@ -133,7 +135,7 @@ const auth = props => {
   let authRedirect = null
 
   if (props.isLoggedIn) {
-    authRedirect = <Redirect to={props.redirectPath} />
+    authRedirect = <Redirect to={redirectPath} />
   }
 
   return (

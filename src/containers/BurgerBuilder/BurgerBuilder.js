@@ -14,6 +14,8 @@ export const burgerBuilder = props => {
   const [purchasable, setPurchasable] = useState(false)
   const [purchasing, setPurchasing] = useState(false)
 
+  const {isBuilding, ingredients, getIngredients} = props
+
   const updatePurchaseState = (ingredients) => {
     const sum = Object.keys(ingredients)
       .map(igKey => {
@@ -34,16 +36,16 @@ export const burgerBuilder = props => {
   }
 
   useEffect(() => {
-    if (!props.isBuilding) {
-      props.getIngredients()
+    if (!isBuilding) {
+      getIngredients()
     } else {
-      updatePurchaseState(props.ingredients)
+      updatePurchaseState(ingredients)
     }
-  },[])
+  },[isBuilding, getIngredients])
 
   useEffect(() => {
-    if (props.ingredients) return updatePurchaseState(props.ingredients)
-  },[props.ingredients])
+    if (ingredients) return updatePurchaseState(ingredients)
+  },[ingredients])
 
   const purchaseHandler = () => {
     if (props.isLoggedIn) {
@@ -65,7 +67,7 @@ export const burgerBuilder = props => {
   }
 
     const disabledInfo = {
-      ...props.ingredients,
+      ...ingredients,
     }
     for (let key in disabledInfo) {
       disabledInfo[key] = disabledInfo[key] <= 0
@@ -73,7 +75,7 @@ export const burgerBuilder = props => {
     let orderSummary = null
 
     let burger = props.error ? <p>Ingredients can't be loaded</p> : <Spinner />
-    if (props.ingredients) {
+    if (ingredients) {
       burger = (
         <React.Fragment>
           <Burger ingredients={props.ingredients} />
@@ -90,7 +92,7 @@ export const burgerBuilder = props => {
       )
       orderSummary = (
         <OrderSummary
-          ingredients={props.ingredients}
+          ingredients={ingredients}
           price={props.totalPrice}
           purchaseCancelled={purchaseCancelHandler}
           purchaseContinued={purchaseContinueHandler}

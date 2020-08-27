@@ -9,9 +9,11 @@ import Spinner from '../../components/UI/Spinner/Spinner'
 import Order from '../../components/Order/Order'
 
 const orders = props => {
+  const {onOrdersLoading} = props
+
   useEffect(() => {
-    props.onOrdersLoading()
-  }, [])
+    onOrdersLoading()
+  }, [onOrdersLoading])
 
   let body = <Spinner />
   if (!props.loading) {
